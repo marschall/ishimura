@@ -12,7 +12,7 @@
     <maven>3.0.3</maven>
   </prerequisites>
 
-  <url>https://github.com/marschall/junit-lambda</url>
+  <url>https://github.com/marschall/ishimura</url>
 
   <scm>
     <connection>scm:git:git@github.com:marschall/ishimura.git</connection>
