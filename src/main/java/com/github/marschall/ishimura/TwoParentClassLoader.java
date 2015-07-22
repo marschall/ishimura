@@ -11,6 +11,20 @@ import java.security.SecureClassLoader;
 import java.util.Enumeration;
 import java.util.Objects;
 
+/**
+ * Class loader used to define the implementation class of {@link UnsafeWrapper}.
+ *
+ * <p>Effectively this class loader will only load three classes:</p>
+ * <dl>
+ * <dt>{@link sun.misc.Unsafe}</dt>
+ * <dd>delegated to {@link #jdkClassLoader}, the class loader of a class that has access to {@link sun.misc.Unsafe}</dd>
+ * <dt>{@link UnsafeWrapper}</dt>
+ * <dd>delegated to {@link #moduleClassLoader}, the class loader of this class</dd>
+ * <dt>{@link UnsafeWrapperImpl}</dt>
+ * <dd>defined by this class loader</dd>
+ * </dl>
+ *
+ */
 final class TwoParentClassLoader extends SecureClassLoader {
 
   /**

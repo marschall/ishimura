@@ -3,6 +3,9 @@ package com.github.marschall.ishimura;
 import java.lang.reflect.Field;
 import java.util.Objects;
 
+/**
+ * Creates an instance {@link UnsafeWrapper}.
+ */
 public final class UnsafeWrapperFactory {
 
   private static UnsafeWrapper wrapper;
