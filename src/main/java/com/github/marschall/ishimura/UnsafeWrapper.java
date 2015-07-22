@@ -2,6 +2,9 @@ package com.github.marschall.ishimura;
 
 /**
  * A wrapper interface exposing all public methods of {@link sun.misc.Unsafe}.
+ *
+ * <p>Code can safely compile and link against this code even if it has no
+ * access to {@link sun.misc.Unsafe}.</p>
  */
 public interface UnsafeWrapper {
   public Object allocateInstance(Class arg0) throws InstantiationException;

@@ -1,7 +1,7 @@
 Ishimura
 ========
 
-Provides access to `sun.misc.Unsafe` even if it is isolated away by a different class loader.
+Provides access to `sun.misc.Unsafe` even if it is isolated away by a different class loader in [Jigsaw](http://openjdk.java.net/projects/jigsaw/).
 
 Usage
 -----
@@ -14,6 +14,8 @@ Optionally you can pass in the unsafe instance if you already have it.
 
 How does it work?
 -----------------
+The interface
+
 
 Why would I need this?
 ----------------------

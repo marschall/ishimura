@@ -1,6 +1,6 @@
 package com.github.marschall.ishimura;
 
-import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Field;
 import java.util.Objects;
 
 public final class UnsafeWrapperFactory {
@@ -32,8 +32,15 @@ public final class UnsafeWrapperFactory {
   }
 
   private static Object getUnsafe() {
-    // FIXME
-    return sun.misc.Unsafe.getUnsafe();
+    ClassLoader classLoader = TwoParentClassLoader.getClassloaderWithUnsafeAccess();
+    try {
+      Class<?> unsafeClass = classLoader.loadClass("sun.misc.Unsafe");
+      Field field = unsafeClass.getDeclaredField("theUnsafe");
+      field.setAccessible(true);
+      return field.get(null);
+    } catch (ReflectiveOperationException e) {
+      throw new RuntimeException("Could not obtain access to sun.misc.Unsafe", e);
+    }
   }
 
 }
