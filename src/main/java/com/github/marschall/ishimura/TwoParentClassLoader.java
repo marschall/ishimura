@@ -24,6 +24,8 @@ import java.util.Objects;
  * <dd>defined by this class loader</dd>
  * </dl>
  *
+ * <p>The parent class loader passed to the superclass will be {@code null} so
+ * we can access the bootstrap class loader when need be (on Java 8).</p>
  */
 final class TwoParentClassLoader extends SecureClassLoader {
 

@@ -4,12 +4,19 @@ import java.lang.reflect.Field;
 import java.util.Objects;
 
 /**
- * Creates an instance {@link UnsafeWrapper}.
+ * Creates an instance {@link UnsafeWrapper}. Avoids all static references to
+ * {@link sun.miscUnsafe}.
  */
 public final class UnsafeWrapperFactory {
 
   private static UnsafeWrapper wrapper;
 
+  /**
+   * Creates the implementation of {@link UnsafeWrapper}. Does a dynamic lookup
+   * of {@link sun.miscUnsafe}.
+   *
+   * @return the implementation of {@link UnsafeWrapper}
+   */
   public synchronized static UnsafeWrapper getUnsafeWrapper() {
     // should not be called only once so synchronized should not be too expensive
     if (wrapper != null) {
@@ -18,6 +25,14 @@ public final class UnsafeWrapperFactory {
     return getUnsafeWrapper(getUnsafe());
   }
 
+  /**
+   * Creates the implementation of {@link UnsafeWrapper} for a given
+   * {@link sun.miscUnsafe} instance. Use this methods when the dynamic lookup
+   * of {@link sun.miscUnsafe} in this class does not work for you.
+   *
+   * @param theUnsafe the unsafe instance to use
+   * @return the implementation of {@link UnsafeWrapper}
+   */
   public synchronized static UnsafeWrapper getUnsafeWrapper(Object theUnsafe) {
     // should not be called only once so synchronized should not be too expensive
     Objects.requireNonNull(theUnsafe);
