@@ -18,7 +18,8 @@ final class UnsafeWrapperImpl implements UnsafeWrapper {
 
   private final sun.misc.Unsafe unsafe;
 
-  UnsafeWrapperImpl(Object unsafe) {
+  public UnsafeWrapperImpl(Object unsafe) {
+    // public so we don't need to set it to accessible
     // Use Object instead of Unsafe because the caller class loader may not have access to the Unsafe class
     Objects.requireNonNull(unsafe);
     this.unsafe = (Unsafe) unsafe;

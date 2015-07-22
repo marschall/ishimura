@@ -15,7 +15,7 @@ public class UnsafeWrapperFactoryTest {
     assertNotNull(wrapper);
 
     int addressSize = wrapper.addressSize();
-    assertTrue("address size", addressSize == 32 || addressSize == 64);
+    assertTrue("address size", addressSize == 4 || addressSize == 8);
   }
 
 }

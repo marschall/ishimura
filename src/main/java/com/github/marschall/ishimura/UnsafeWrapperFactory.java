@@ -33,6 +33,9 @@ public final class UnsafeWrapperFactory {
 
   private static Object getUnsafe() {
     ClassLoader classLoader = TwoParentClassLoader.getClassloaderWithUnsafeAccess();
+    if (classLoader == null) {
+      classLoader = UnsafeWrapperFactory.class.getClassLoader();
+    }
     try {
       Class<?> unsafeClass = classLoader.loadClass("sun.misc.Unsafe");
       Field field = unsafeClass.getDeclaredField("theUnsafe");

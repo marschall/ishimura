@@ -9,6 +9,7 @@ import java.net.URLConnection;
 import java.net.URLStreamHandler;
 import java.security.SecureClassLoader;
 import java.util.Enumeration;
+import java.util.Objects;
 
 final class TwoParentClassLoader extends SecureClassLoader {
 
@@ -31,6 +32,7 @@ final class TwoParentClassLoader extends SecureClassLoader {
     registerAsParallelCapable();
   }
 
+  // can be null if bootstrap class loader
   private final ClassLoader jdkClassLoader;
   private final ClassLoader moduleClassLoader;
 
@@ -42,11 +44,13 @@ final class TwoParentClassLoader extends SecureClassLoader {
 
   static ClassLoader getClassloaderWithUnsafeAccess() {
     // LockSupport can park threads and has access to the unsafe
+    // returns null if loaded with bootstrap class loader
     return java.util.concurrent.locks.LockSupport.class.getClassLoader();
   }
 
   private TwoParentClassLoader(ClassLoader jdkClassLoader, ClassLoader moduleClassLoader) {
-    super(null);
+    super(null); // causes superclass methods to use bootstrap class loader
+    Objects.requireNonNull(moduleClassLoader);
     this.jdkClassLoader = jdkClassLoader;
     this.moduleClassLoader = moduleClassLoader;
   }
@@ -55,34 +59,51 @@ final class TwoParentClassLoader extends SecureClassLoader {
   protected Class<?> loadClass(String name, boolean resolve) throws ClassNotFoundException {
     synchronized (getClassLoadingLock(name)) {
       // First, check if the class has already been loaded
-      Class<?> c = findLoadedClass(name);
-      if (c == null) {
+      Class<?> clazz = findLoadedClass(name);
+      if (clazz == null) {
         try {
           // check the JDK class loader first
-          c = jdkClassLoader.loadClass(name);
+          if (jdkClassLoader != null) {
+            clazz = jdkClassLoader.loadClass(name);
+          } else {
+            clazz = loadFromBootstrapClassLoader(name, resolve);
+          }
         } catch (ClassNotFoundException e1) {
           try {
             // then check the module loader
-            c = moduleClassLoader.loadClass(name);
+            clazz = moduleClassLoader.loadClass(name);
           } catch (ClassNotFoundException e2) {
             // finally check we ask for the impl class
             if (name.equals(WRAPPER_IMPL_CLASS_NAME)) {
-              c = defineClass(name, WRAPPER_IMPL_CODE, 0, WRAPPER_IMPL_CODE.length);
+              clazz = defineClass(name, WRAPPER_IMPL_CODE, 0, WRAPPER_IMPL_CODE.length);
             }
           }
         }
 
       }
       if (resolve) {
-        resolveClass(c);
+        resolveClass(clazz);
       }
-      return c;
+      return clazz;
     }
+  }
+
+  private Class<?> loadFromBootstrapClassLoader(String name, boolean resolve) throws ClassNotFoundException {
+    return super.loadClass(name, resolve);
+  }
+
+  private URL getBootstrapResource(String name) {
+    return super.getResource(name);
   }
 
   @Override
   public URL getResource(String name) {
-    URL resource = this.jdkClassLoader.getResource(name);
+    URL resource;
+    if (jdkClassLoader != null) {
+      resource = this.jdkClassLoader.getResource(name);
+    } else {
+      resource = this.getBootstrapResource(name);
+    }
     if (resource == null) {
       resource = this.moduleClassLoader.getResource(name);
     }
