@@ -1,5 +1,7 @@
 package com.github.marschall.ishimura;
 
+import java.util.Objects;
+
 import sun.misc.Unsafe;
 
 /**
@@ -17,6 +19,8 @@ final class UnsafeWrapperImpl implements UnsafeWrapper {
   private final sun.misc.Unsafe unsafe;
 
   UnsafeWrapperImpl(Object unsafe) {
+    // Use Object instead of Unsafe because the caller class loader may not have access to the Unsafe class
+    Objects.requireNonNull(unsafe);
     this.unsafe = (Unsafe) unsafe;
   }
 

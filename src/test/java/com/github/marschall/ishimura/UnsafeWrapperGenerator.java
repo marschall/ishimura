@@ -64,7 +64,7 @@ public class UnsafeWrapperGenerator {
     buffer.append("public ");
 
     if (Modifier.isStatic(modifiers)) {
-      buffer.append("static ");
+      throw new IllegalArgumentException("method " + method + " is static");
     }
 
     Class<?> returnType = method.getReturnType();

@@ -1,6 +1,7 @@
 package com.github.marschall.ishimura;
 
 import java.lang.reflect.InvocationTargetException;
+import java.util.Objects;
 
 public final class UnsafeWrapperFactory {
 
@@ -16,6 +17,7 @@ public final class UnsafeWrapperFactory {
 
   public synchronized static UnsafeWrapper getUnsafeWrapper(Object theUnsafe) {
     // should not be called only once so synchronized should not be too expensive
+    Objects.requireNonNull(theUnsafe);
     if (wrapper != null) {
       return wrapper;
     }

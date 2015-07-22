@@ -1,7 +1,7 @@
 package com.github.marschall.ishimura;
 
 /**
- * A wrapper interface
+ * A wrapper interface exposing all public methods of {@link sun.misc.Unsafe}.
  */
 public interface UnsafeWrapper {
   public Object allocateInstance(Class arg0) throws InstantiationException;
