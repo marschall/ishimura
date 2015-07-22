@@ -6,6 +6,7 @@ package com.github.marschall.ishimura;
  * <p>Code can safely compile and link against this code even if it has no
  * access to {@link sun.misc.Unsafe}.</p>
  */
+// http://grepcode.com/file/repository.grepcode.com/java/root/jdk/openjdk/8u40-b25/sun/misc/Unsafe.java
 public interface UnsafeWrapper {
   public Object allocateInstance(Class arg0) throws InstantiationException;
   public void copyMemory(long arg0, long arg1, long arg2);
