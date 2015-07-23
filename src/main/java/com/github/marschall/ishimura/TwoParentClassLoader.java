@@ -9,6 +9,7 @@ import java.net.URLConnection;
 import java.net.URLStreamHandler;
 import java.security.SecureClassLoader;
 import java.util.Enumeration;
+import java.util.NoSuchElementException;
 import java.util.Objects;
 
 /**
@@ -112,6 +113,10 @@ final class TwoParentClassLoader extends SecureClassLoader {
     return super.getResource(name);
   }
 
+  private Enumeration<URL> getBootstrapResources(String name) throws IOException {
+    return super.getResources(name);
+  }
+
   @Override
   public URL getResource(String name) {
     URL resource;
@@ -124,19 +129,75 @@ final class TwoParentClassLoader extends SecureClassLoader {
       resource = this.moduleClassLoader.getResource(name);
     }
     if (resource == null && name.equals(WRAPPER_IMPL_RESOURCE_NAME)) {
-      try {
-        resource = new URL(null, "ishimura://" + name, ImplClassUrlStreamHandler.INSTANCE);
-      } catch (MalformedURLException e) {
-        throw new RuntimeException("could not create resource", e);
-      }
+      resource = newByteCodeUrl();
     }
     return resource;
   }
 
+  private static URL newByteCodeUrl() {
+    try {
+      return new URL(null, "ishimura://" + WRAPPER_IMPL_RESOURCE_NAME, ImplClassUrlStreamHandler.INSTANCE);
+    } catch (MalformedURLException e) {
+      throw new RuntimeException("could not create resource", e);
+    }
+  }
+
   @Override
-  protected Enumeration<URL> findResources(String name) throws IOException {
-    // TODO Auto-generated method stub
-    return super.findResources(name);
+  public Enumeration<URL> getResources(String name) throws IOException {
+    Enumeration<URL> first;
+    if (this.jdkClassLoader != null) {
+      first = this.jdkClassLoader.getResources(name);
+    } else {
+      first = this.getBootstrapResources(name);
+    }
+    Enumeration<URL> second = this.moduleClassLoader.getResources(name);
+    boolean includeByteCode = name.equals(WRAPPER_IMPL_CODE);
+    return new CompositeEnumeration(first, second, includeByteCode);
+  }
+
+  static final class CompositeEnumeration implements Enumeration<URL> {
+
+    private final Enumeration<URL> first;
+    private final Enumeration<URL> second;
+    private Enumeration<URL> current;
+
+    private final boolean includeByteCode;
+    private boolean byteCodeReturned;
+
+
+    CompositeEnumeration(Enumeration<URL> first, Enumeration<URL> second, boolean includeByteCode) {
+      this.first = first;
+      this.second = second;
+      this.current = first;
+      this.includeByteCode = includeByteCode;
+      this.byteCodeReturned = false;
+    }
+
+    @Override
+    public boolean hasMoreElements() {
+      if (this.current == first) {
+        return first.hasMoreElements() || second.hasMoreElements() || includeByteCode;
+      } else {
+        return second.hasMoreElements() || includeByteCode;
+      }
+    }
+
+    @Override
+    public URL nextElement() {
+      if (this.current.hasMoreElements()) {
+        URL element = current.nextElement();
+        if (this.current == this.first && !this.current.hasMoreElements()) {
+          this.current = second;
+        }
+        return element;
+      }
+      if (this.includeByteCode && !this.byteCodeReturned) {
+        this.byteCodeReturned = true;
+        return newByteCodeUrl();
+      }
+      throw new NoSuchElementException();
+    }
+
   }
 
   /**
