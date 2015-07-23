@@ -37,7 +37,7 @@ final class TwoParentClassLoader extends SecureClassLoader {
   /**
    * Name of the {@link UnsafeWrapper} implementation class resource.
    */
-  private static final String WRAPPER_IMPL_RESOURCE_NAME = "com/github/marschall/ishimura/UnsafeWrapperImpl.java";
+  static final String WRAPPER_IMPL_RESOURCE_NAME = "com/github/marschall/ishimura/UnsafeWrapperImpl.java";
 
   /**
    * Byte code of the {@link UnsafeWrapper} implementation class.
@@ -125,7 +125,7 @@ final class TwoParentClassLoader extends SecureClassLoader {
     }
     if (resource == null && name.equals(WRAPPER_IMPL_RESOURCE_NAME)) {
       try {
-        resource = new URL(null, name, ImplClassUrlStreamHandler.INSTANCE);
+        resource = new URL(null, "ishimura://" + name, ImplClassUrlStreamHandler.INSTANCE);
       } catch (MalformedURLException e) {
         throw new RuntimeException("could not create resource", e);
       }
@@ -183,7 +183,5 @@ final class TwoParentClassLoader extends SecureClassLoader {
     }
 
   }
-
-
 
 }
