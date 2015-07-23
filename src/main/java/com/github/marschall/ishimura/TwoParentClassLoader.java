@@ -176,9 +176,9 @@ final class TwoParentClassLoader extends SecureClassLoader {
     @Override
     public boolean hasMoreElements() {
       if (this.current == first) {
-        return first.hasMoreElements() || second.hasMoreElements() || includeByteCode;
+        return this.first.hasMoreElements() || this.second.hasMoreElements() || this.includeByteCode;
       } else {
-        return second.hasMoreElements() || includeByteCode;
+        return this.second.hasMoreElements() || this.includeByteCode;
       }
     }
 
@@ -187,7 +187,7 @@ final class TwoParentClassLoader extends SecureClassLoader {
       if (this.current.hasMoreElements()) {
         URL element = current.nextElement();
         if (this.current == this.first && !this.current.hasMoreElements()) {
-          this.current = second;
+          this.current = this.second;
         }
         return element;
       }
