@@ -11,12 +11,14 @@ public class UnsafeWrapperGenerator {
   public static void main(String[] args) {
     UnsafeWrapperGenerator generator = new UnsafeWrapperGenerator();
 
-    System.out.println(generator.getClassContent());
+//    System.out.println(generator.getClassContent());
+    System.out.println(generator.getInterfaceContent());
   }
 
   String getInterfaceContent() {
     StringBuilder buffer = new StringBuilder();
     for (Method method : this.getPublicUnsafeMethods()) {
+      buffer.append("  @javax.annotation.Generated(\"ishimura\")\n");
       buffer.append("  ");
       this.generateMethodSignature(method, buffer);
       buffer.append(";\n");
@@ -27,6 +29,8 @@ public class UnsafeWrapperGenerator {
   String getClassContent() {
     StringBuilder buffer = new StringBuilder();
     for (Method method : this.getPublicUnsafeMethods()) {
+      buffer.append("  @javax.annotation.Generated(\"ishimura\")\n");
+      buffer.append("  ");
       this.generateMethodSignature(method, buffer);
       buffer.append("{ ");
       Class<?> returnType = method.getReturnType();
