@@ -10,9 +10,6 @@ import sun.misc.Unsafe;
  *
  * <p>This class will have to be loaded from a class loader that has access
  * to {@link sun.misc.Unsafe}.</p>
- *
- * <p>This class will not be present in the resulting JAR. Instead the byte
- * code will be stored in {@link TwoParentClassLoader}.</p>
  */
 final class UnsafeWrapperImpl implements UnsafeWrapper {
 

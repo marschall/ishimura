@@ -73,22 +73,12 @@
         </configuration>
       </plugin>
       <plugin>
-        <artifactId>maven-jar-plugin</artifactId>
-        <configuration>
-          <excludes>
-            <!-- 
-              stored in a byte[] in the class loader
-             -->
-            <exclude>com/github/marschall/ishimura/UnsafeWrapperImpl.class</exclude>
-          </excludes>
-        </configuration>
-      </plugin>
-      <plugin>
         <artifactId>maven-javadoc-plugin</artifactId>
         <configuration>
           <links>
             <link>http://docs.oracle.com/javase/8/docs/api/</link>
           </links>
+          <additionalparam>-Xdoclint:none</additionalparam>
         </configuration>
         <executions>
           <execution>
