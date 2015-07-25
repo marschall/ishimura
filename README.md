@@ -1,4 +1,4 @@
-Ishimura
+Ishimura [![Build Status](https://travis-ci.org/marschall/ishimura.svg)](https://travis-ci.org/marschall/ishimura)
 ========
 
 Provides access to `sun.misc.Unsafe` even if it is isolated away by a different class loader in [Jigsaw](http://openjdk.java.net/projects/jigsaw/).
